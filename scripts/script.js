@@ -21,6 +21,25 @@ const GameBoard = (function() {
         return currentBoardState;
     }
 
+    function printBoardState() {
+        const board = currentBoardState;
+        console.log(`${board[0]}\n${board[1]}\n${board[2]}`);
+    }
+
+    function addMarkerToBoardCell(stringPosition, playerMarker) {
+        let [row, col] = stringPosition.split("");
+        if (isPositionValid(+row, +col)) {
+            currentBoardState[+row][+col] = playerMarker;
+        }
+    }
+
+    function isPositionValid(row, col) {
+        if (row >= 0 && row < 3 && col >= 0 && col < 3) {
+            return true;
+        }
+        return false;
+    }
+
     function getMarkersArray() {
         return markersArray;
     }
@@ -31,8 +50,10 @@ const GameBoard = (function() {
 
     return {
         getBoardState,
+        addMarkerToBoardCell,
         getMarkersArray,
-        popMarker
+        popMarker, 
+        printBoardState
     }
 })();
 
