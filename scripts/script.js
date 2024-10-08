@@ -62,8 +62,10 @@ const Game = (function() {
 
     let currentPlayerTurn;
     let winner;
+    let gameStarted = false;
 
     function start() {
+        gameStarted = true;
         const player1 = new Player(prompt("Name of player1:"));
         const player2 = new Player(prompt("Name of player2:"));
         const players = [player1, player2];
@@ -72,30 +74,36 @@ const Game = (function() {
         GameBoard.printBoardState();
 
         // GAME LOOP
-        while (true) {
-            console.log(`It's ${currentPlayerTurn.name}'s turn playing with the ${currentPlayerTurn.marker} marker.`);
-            const selectedPosition = prompt(`Provide a position (e.g. 02 representing the row and column) for your ${currentPlayerTurn.marker} marker`);
-
-            if (!isBoardCellFilled(selectedPosition)) {
-                GameBoard.addMarkerToBoardCell(selectedPosition, currentPlayerTurn.marker);
-                document.dispatchEvent(renderEvent);
-            } else {
-                console.log("This board cell is already filled, try again.");
-                continue;
+        function asyncGameLoop() {
+            if (gameStarted) {
+                console.log(`It's ${currentPlayerTurn.name}'s turn playing with the ${currentPlayerTurn.marker} marker.`);
+                const selectedPosition = prompt(`Provide a position (e.g. 02 representing the row and column) for your ${currentPlayerTurn.marker} marker`);
+    
+                if (!isBoardCellFilled(selectedPosition)) {
+                    GameBoard.addMarkerToBoardCell(selectedPosition, currentPlayerTurn.marker);
+                    document.dispatchEvent(renderEvent);
+                } else {
+                    console.log("This board cell is already filled, try again.");
+                    asyncGameLoop();
+                }
+    
+                if (isThereWinner()) {
+                    const winnerObject = player1.marker === winner ? player1 : player2;
+                    console.log(`${winnerObject.name} wins as ${winnerObject.marker}`);
+                    gameStarted = false;
+                    asyncGameLoop();
+                } else if (isBoardFilled()) {
+                    console.log(`There's a Tie between ${player1.name} and ${player2.name}`);
+                    gameStarted = false;
+                    asyncGameLoop();
+                }
+    
+                GameBoard.printBoardState();
+                currentPlayerTurn = currentPlayerTurn === player1 ? player2 : player1;
+                setTimeout(asyncGameLoop, 0);
             }
-
-            if (isThereWinner()) {
-                const winnerObject = player1.marker === winner ? player1 : player2;
-                console.log(`${winnerObject.name} wins as ${winnerObject.marker}`);
-                break;
-            } else if (isBoardFilled()) {
-                console.log(`There's a Tie between ${player1.name} and ${player2.name}`);
-                break;
-            }
-
-            GameBoard.printBoardState();
-            currentPlayerTurn = currentPlayerTurn === player1 ? player2 : player1;
         }
+        asyncGameLoop();
     }
 
     function isBoardFilled() {
