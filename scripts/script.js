@@ -165,4 +165,4 @@ function Player(playerName) {
     }
 }
 
-Game.start();
+/* Game.start(); */
