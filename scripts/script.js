@@ -58,6 +58,8 @@ const GameBoard = (function() {
 })();
 
 const Game = (function() {
+    const renderEvent = new Event('renderBoard');
+
     let currentPlayerTurn;
     let winner;
 
@@ -76,6 +78,7 @@ const Game = (function() {
 
             if (!isBoardCellFilled(selectedPosition)) {
                 GameBoard.addMarkerToBoardCell(selectedPosition, currentPlayerTurn.marker);
+                document.dispatchEvent(renderEvent);
             } else {
                 console.log("This board cell is already filled, try again.");
                 continue;
@@ -180,4 +183,60 @@ function Player(playerName) {
     }
 }
 
-Game.start();
+const DomEvents = (function() {
+    const rowColToCellIds = {
+        0: {
+            0: 'one',
+            1: 'two',
+            2: 'three'
+        },
+        1: {
+            0: 'four',
+            1: 'five',
+            2: 'six'
+        },
+        2: {
+            0: 'seven',
+            1: 'eight',
+            2: 'nine'
+        }
+    }
+
+    function startGame() {
+        Game.start();
+    }
+
+    function attachStartEventListener() {
+        const startButton = document.querySelector('#start');
+        startButton.addEventListener("click", startGame);
+    }
+
+    function renderBoardState() {
+        const board = GameBoard.getBoardState();
+        let boardCell;
+        for (let row = 0; row < board.length; row++) {
+            for (let col = 0; col < board.length; col++) {
+                if (board[row][col] !== 0) {
+                    const boardCellId = rowColToCellIds[row][col];
+                    boardCell = document.querySelector(`#${boardCellId}`);
+                    boardCell.textContent = board[row][col];
+                }
+            }
+        }
+    }
+
+    function attachRenderBoardEvent() {
+        document.addEventListener("renderBoard", renderBoardState);
+    }
+
+    function attachEventListeners() {
+        attachStartEventListener();
+        attachRenderBoardEvent();
+    }
+
+    return {
+        attachEventListeners
+    }
+})();
+
+DomEvents.attachEventListeners();

@@ -71,8 +71,14 @@ header .game-info {
 }
 
 .board-cell {
-    border: 1px solid #f7f7f7;
+    border: 2px solid #f7f7f7;
     cursor: pointer;
+    font-size: 10rem;
+    color: #f7f7f7;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .board-cell:hover {
