@@ -85,11 +85,26 @@ const Game = (function() {
                 const winnerObject = player1.marker === winner ? player1 : player2;
                 console.log(`${winnerObject.name} wins as ${winnerObject.marker}`);
                 break;
+            } else if (isBoardFilled()) {
+                console.log(`There's a Tie between ${player1.name} and ${player2.name}`);
+                break;
             }
 
             GameBoard.printBoardState();
             currentPlayerTurn = currentPlayerTurn === player1 ? player2 : player1;
         }
+    }
+
+    function isBoardFilled() {
+        const board = GameBoard.getBoardState();
+        for (let i = 0; i < board.length; i++) {
+            if (board[i].some(cell => {
+                return cell === 0;
+            })) {
+                return false;
+            }
+        }
+        return true;
     }
 
     function isBoardCellFilled(selectedPosition) {
@@ -165,4 +180,4 @@ function Player(playerName) {
     }
 }
 
-/* Game.start(); */
+Game.start();
