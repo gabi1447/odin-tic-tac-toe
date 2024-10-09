@@ -48,12 +48,21 @@ const GameBoard = (function() {
         markersArray.splice(markerIndex, 1);
     }
 
+    function resetBoardStateArray() {
+        currentBoardState = currentBoardState.map(row => {
+            return row.map(() => {
+                return 0;
+            })
+        });
+    }
+
     return {
         getBoardState,
         addMarkerToBoardCell,
         getMarkersArray,
         popMarker, 
-        printBoardState
+        printBoardState,
+        resetBoardStateArray
     }
 })();
 
@@ -79,7 +88,6 @@ const Game = (function() {
         // GAME LOOP
         async function asyncGameLoop() {
             if (gameStarted) {
-                // Render marker in boardCell with a click event
                 console.log(`It's ${currentPlayerTurn.name}'s turn playing with the ${currentPlayerTurn.marker} marker.`);
                 gameInfo.textContent = `It's ${currentPlayerTurn.name}'s turn playing with the ${currentPlayerTurn.marker.toUpperCase()} marker.`;
                 selectedPosition = await DomEvents.registerClickOnBoardCell();
@@ -172,8 +180,13 @@ const Game = (function() {
         return false;
     }
 
+    function stopGame() {
+        gameStarted = false;
+    }
+
     return {
-        start
+        start,
+        stopGame
     }
 })();
 
@@ -239,6 +252,25 @@ const DomEvents = (function() {
         startButton.addEventListener("click", startGame);
     }
 
+    function restartGame() {
+        Game.stopGame();
+        GameBoard.resetBoardStateArray();
+        emptyBoardCells();
+        document.querySelector('.game-info').textContent = 'Game terminated';
+    }
+
+    function attachRestartEventListener() {
+        const restartButton = document.querySelector('#reset');
+        restartButton.addEventListener("click", restartGame);
+    }
+
+    function emptyBoardCells() {
+        const boardCells = document.querySelectorAll('.board-cell');
+        boardCells.forEach(boardCell => {
+            boardCell.textContent = '';
+        })
+    }
+
     function registerClickOnBoardCell() {
         return new Promise((resolve) => {
             const boardContainer = document.querySelector('.board-container');
@@ -271,6 +303,7 @@ const DomEvents = (function() {
 
     function attachEventListeners() {
         attachStartEventListener();
+        attachRestartEventListener();
         attachRenderBoardEvent();
     }
 
