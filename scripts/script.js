@@ -66,6 +66,9 @@ const Game = (function() {
 
     function start() {
         gameStarted = true;
+        let selectedPosition;
+        const gameInfo = document.querySelector(".game-info");
+
         const player1 = new Player(prompt("Name of player1:"));
         const player2 = new Player(prompt("Name of player2:"));
         const players = [player1, player2];
@@ -74,26 +77,31 @@ const Game = (function() {
         GameBoard.printBoardState();
 
         // GAME LOOP
-        function asyncGameLoop() {
+        async function asyncGameLoop() {
             if (gameStarted) {
+                // Render marker in boardCell with a click event
                 console.log(`It's ${currentPlayerTurn.name}'s turn playing with the ${currentPlayerTurn.marker} marker.`);
-                const selectedPosition = prompt(`Provide a position (e.g. 02 representing the row and column) for your ${currentPlayerTurn.marker} marker`);
+                gameInfo.textContent = `It's ${currentPlayerTurn.name}'s turn playing with the ${currentPlayerTurn.marker.toUpperCase()} marker.`;
+                selectedPosition = await DomEvents.registerClickOnBoardCell();
     
                 if (!isBoardCellFilled(selectedPosition)) {
                     GameBoard.addMarkerToBoardCell(selectedPosition, currentPlayerTurn.marker);
                     document.dispatchEvent(renderEvent);
                 } else {
                     console.log("This board cell is already filled, try again.");
+                    gameInfo.textContent = "This board cell is already filled, try again.";
                     asyncGameLoop();
                 }
     
                 if (isThereWinner()) {
                     const winnerObject = player1.marker === winner ? player1 : player2;
                     console.log(`${winnerObject.name} wins as ${winnerObject.marker}`);
+                    gameInfo.textContent = `${winnerObject.name} wins as ${winnerObject.marker}`;
                     gameStarted = false;
                     asyncGameLoop();
                 } else if (isBoardFilled()) {
                     console.log(`There's a Tie between ${player1.name} and ${player2.name}`);
+                    gameInfo.textContent = `There's a Tie between ${player1.name} and ${player2.name}`;
                     gameStarted = false;
                     asyncGameLoop();
                 }
@@ -210,6 +218,18 @@ const DomEvents = (function() {
         }
     }
 
+    const cellIdToRowCol = {
+        one: '00',
+        two: '01',
+        three: '02',
+        four: '10',
+        five: '11',
+        six: '12',
+        seven: '20',
+        eight: '21',
+        nine: '22'
+    }
+
     function startGame() {
         Game.start();
     }
@@ -217,6 +237,18 @@ const DomEvents = (function() {
     function attachStartEventListener() {
         const startButton = document.querySelector('#start');
         startButton.addEventListener("click", startGame);
+    }
+
+    function registerClickOnBoardCell() {
+        return new Promise((resolve) => {
+            const boardContainer = document.querySelector('.board-container');
+            boardContainer.addEventListener("click", (event) => {
+                if (event.target.className === 'board-cell') {
+                    const stringRowCol = cellIdToRowCol[event.target.id];
+                    resolve(stringRowCol);
+                }
+            })
+        });
     }
 
     function renderBoardState() {
@@ -243,7 +275,8 @@ const DomEvents = (function() {
     }
 
     return {
-        attachEventListeners
+        attachEventListeners,
+        registerClickOnBoardCell
     }
 })();
 
