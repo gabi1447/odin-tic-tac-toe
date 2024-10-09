@@ -90,28 +90,32 @@ const Game = (function() {
             if (gameStarted) {
                 console.log(`It's ${currentPlayerTurn.name}'s turn playing with the ${currentPlayerTurn.marker} marker.`);
                 gameInfo.textContent = `It's ${currentPlayerTurn.name}'s turn playing with the ${currentPlayerTurn.marker.toUpperCase()} marker.`;
-                selectedPosition = await DomEvents.registerClickOnBoardCell();
-    
-                if (!isBoardCellFilled(selectedPosition)) {
-                    GameBoard.addMarkerToBoardCell(selectedPosition, currentPlayerTurn.marker);
-                    document.dispatchEvent(renderEvent);
-                } else {
-                    console.log("This board cell is already filled, try again.");
-                    gameInfo.textContent = "This board cell is already filled, try again.";
-                    asyncGameLoop();
+                
+                while (true) {
+                    selectedPosition = await DomEvents.registerClickOnBoardCell();
+                    
+                    if (!isBoardCellFilled(selectedPosition)) {
+                        GameBoard.addMarkerToBoardCell(selectedPosition, currentPlayerTurn.marker);
+                        document.dispatchEvent(renderEvent);
+                        break;
+                    } else {
+                        console.log("This board cell is already filled, try again.");
+                        gameInfo.textContent = "This board cell is already filled, try again.";
+                        continue;
+                    }
                 }
-    
+                
                 if (isThereWinner()) {
                     const winnerObject = player1.marker === winner ? player1 : player2;
                     console.log(`${winnerObject.name} wins as ${winnerObject.marker}`);
                     gameInfo.textContent = `${winnerObject.name} wins as ${winnerObject.marker}`;
                     gameStarted = false;
-                    asyncGameLoop();
+
                 } else if (isBoardFilled()) {
                     console.log(`There's a Tie between ${player1.name} and ${player2.name}`);
                     gameInfo.textContent = `There's a Tie between ${player1.name} and ${player2.name}`;
                     gameStarted = false;
-                    asyncGameLoop();
+
                 }
     
                 GameBoard.printBoardState();
