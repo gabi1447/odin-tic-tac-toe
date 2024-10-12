@@ -252,7 +252,7 @@ const DomEvents = (function() {
     }
 
     function startGame() {
-        Game.start();
+        restartGame();
     }
 
     function attachStartEventListener() {
@@ -264,7 +264,6 @@ const DomEvents = (function() {
         Game.stopGame();
         GameBoard.resetBoardStateArray();
         renderBoardState();
-        document.querySelector('.game-info').textContent = 'Game terminated';
         Game.start();
     }
 
