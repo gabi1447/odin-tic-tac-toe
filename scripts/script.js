@@ -10,9 +10,9 @@ const GeneralModule = (function() {
 
 const GameBoard = (function() {
     let currentBoardState = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
     ];
 
     let markersArray = ['x', 'o'];
@@ -130,7 +130,7 @@ const Game = (function() {
         const board = GameBoard.getBoardState();
         for (let i = 0; i < board.length; i++) {
             if (board[i].some(cell => {
-                return cell === 0;
+                return cell === '';
             })) {
                 return false;
             }
@@ -142,7 +142,7 @@ const Game = (function() {
         const [row, col] = selectedPosition.split("");
         const board = GameBoard.getBoardState();
 
-        return board[+row][+col] === 0 ? false : true;
+        return board[+row][+col] === '' ? false : true;
     }
 
     function whoStartsGame(arrayObjectPlayers) {
@@ -292,11 +292,9 @@ const DomEvents = (function() {
         let boardCell;
         for (let row = 0; row < board.length; row++) {
             for (let col = 0; col < board.length; col++) {
-                if (board[row][col] !== 0) {
-                    const boardCellId = rowColToCellIds[row][col];
-                    boardCell = document.querySelector(`#${boardCellId}`);
-                    boardCell.textContent = board[row][col];
-                }
+                const boardCellId = rowColToCellIds[row][col];
+                boardCell = document.querySelector(`#${boardCellId}`);
+                boardCell.textContent = board[row][col];
             }
         }
     }
