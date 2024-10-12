@@ -51,8 +51,8 @@ const GameBoard = (function() {
     function resetBoardStateArray() {
         currentBoardState = currentBoardState.map(row => {
             return row.map(() => {
-                return 0;
-            })
+                return '';
+            });
         });
     }
 
@@ -259,20 +259,13 @@ const DomEvents = (function() {
     function restartGame() {
         Game.stopGame();
         GameBoard.resetBoardStateArray();
-        emptyBoardCells();
+        renderBoardState();
         document.querySelector('.game-info').textContent = 'Game terminated';
     }
 
     function attachRestartEventListener() {
         const restartButton = document.querySelector('#reset');
         restartButton.addEventListener("click", restartGame);
-    }
-
-    function emptyBoardCells() {
-        const boardCells = document.querySelectorAll('.board-cell');
-        boardCells.forEach(boardCell => {
-            boardCell.textContent = '';
-        })
     }
 
     function registerClickOnBoardCell() {
