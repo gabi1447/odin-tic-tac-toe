@@ -71,6 +71,8 @@ const Game = (function() {
 
     let currentPlayerTurn;
     let winner;
+    let player1;
+    let player2;
     let gameStarted = false;
 
     function start() {
@@ -78,8 +80,10 @@ const Game = (function() {
         let selectedPosition;
         const gameInfo = document.querySelector(".game-info");
 
-        const player1 = new Player(prompt("Name of player1:"));
-        const player2 = new Player(prompt("Name of player2:"));
+        if (!player1 && !player2) {
+            player1 = new Player(prompt("Name of player1:"));
+            player2 = new Player(prompt("Name of player2:"));
+        }
         const players = [player1, player2];
 
         currentPlayerTurn = whoStartsGame(players);
@@ -261,6 +265,7 @@ const DomEvents = (function() {
         GameBoard.resetBoardStateArray();
         renderBoardState();
         document.querySelector('.game-info').textContent = 'Game terminated';
+        Game.start();
     }
 
     function attachRestartEventListener() {
